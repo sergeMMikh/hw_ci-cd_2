@@ -41,63 +41,63 @@
         group: root
         mode: 0644
 
-- name: Get PostgreSQL installed
-  hosts: postgres
-  become: true
-  tasks:
-    - name: Change repo file
-      copy:
-        src: CentOS-Base.repo
-        dest: /etc/yum.repos.d/CentOS-Base.repo
-        mode: 0644
-        owner: root
-        group: root
+# - name: Get PostgreSQL installed
+#   hosts: postgres
+#   become: true
+#   tasks:
+#     - name: Change repo file
+#       copy:
+#         src: CentOS-Base.repo
+#         dest: /etc/yum.repos.d/CentOS-Base.repo
+#         mode: 0644
+#         owner: root
+#         group: root
 
-    - name: Install PostgreSQL repos
-      yum:
-        name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-        state: present
-        validate_certs: false
+#     - name: Install PostgreSQL repos
+#       yum:
+#         name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+#         state: present
+#         validate_certs: false
 
-    - name: Install PostgreSQL
-      yum:
-        name: "postgresql{{ postgresql_version }}-server"
-        state: present
+#     - name: Install PostgreSQL
+#       yum:
+#         name: "postgresql{{ postgresql_version }}-server"
+#         state: present
 
-    - name: Init template1 DB
-      command: /usr/pgsql-11/bin/postgresql-11-setup initdb
-      failed_when: false
+#     - name: Init template1 DB
+#       command: /usr/pgsql-11/bin/postgresql-11-setup initdb
+#       failed_when: false
 
-    - name: Start pgsql service
-      systemd:
-        name: "postgresql-{{ postgresql_version }}"
-        state: started
-        enabled: true
+#     - name: Start pgsql service
+#       systemd:
+#         name: "postgresql-{{ postgresql_version }}"
+#         state: started
+#         enabled: true
 
-    - name: Create user in system
-      user:
-        name: "{{ sonarqube_db_user }}"
-    - name: Create user for Sonar in PostgreSQL
-      become_user: postgres
-      command: "createuser -s -e {{ sonarqube_db_user }}"
-      failed_when: false
+#     - name: Create user in system
+#       user:
+#         name: "{{ sonarqube_db_user }}"
+#     - name: Create user for Sonar in PostgreSQL
+#       become_user: postgres
+#       command: "createuser -s -e {{ sonarqube_db_user }}"
+#       failed_when: false
 
-    - name: Change password for Sonar user in PostgreSQL
-      become_user: postgres
-      command: "psql -c \"ALTER USER sonar WITH ENCRYPTED password '{{ sonarqube_db_password }}';\""
+#     - name: Change password for Sonar user in PostgreSQL
+#       become_user: postgres
+#       command: "psql -c \"ALTER USER sonar WITH ENCRYPTED password '{{ sonarqube_db_password }}';\""
 
-    - name: Create Sonar DB
-      become_user: postgres
-      command: "createdb {{ sonarqube_db_name }}"
-      failed_when: false
+#     - name: Create Sonar DB
+#       become_user: postgres
+#       command: "createdb {{ sonarqube_db_name }}"
+#       failed_when: false
 
-    - name: Copy pg_hba.conf
-      copy:
-        src: pg_hba.conf
-        dest: /var/lib/pgsql/11/data/pg_hba.conf
-        mode: 0600
-        owner: postgres
-        group: postgres
+#     - name: Copy pg_hba.conf
+#       copy:
+#         src: pg_hba.conf
+#         dest: /var/lib/pgsql/11/data/pg_hba.conf
+#         mode: 0600
+#         owner: postgres
+#         group: postgres
 
 - name: Prepare Sonar host
   hosts: sonarqube
@@ -127,14 +127,14 @@
         line: '%{{ sonarqube_db_user }} ALL=(ALL) NOPASSWD: ALL'
         validate: 'visudo -cf %s'
 
-    - name: Increase Virtual Memory
-      lineinfile:
-        dest: /etc/sysctl.conf
-        state: present
-        regexp: '^vm.max_map_count'
-        line: 'vm.max_map_count=262144'
-    - name: Reboot VM
-      reboot:
+    # - name: Increase Virtual Memory
+    #   lineinfile:
+    #     dest: /etc/sysctl.conf
+    #     state: present
+    #     regexp: '^vm.max_map_count'
+    #     line: 'vm.max_map_count=262144'
+    # - name: Reboot VM
+    #   reboot:
 
 - name: Get Sonarqube installed
   hosts: sonarqube
@@ -166,20 +166,20 @@
         group: "{{ sonarqube_db_user }}"
         remote_src: true
 
-    - name: Configure SonarQube JDBC settings for PostgreSQL.
-      lineinfile:
-        dest: /usr/local/sonar/conf/sonar.properties
-        regexp: "{{ item.regexp }}"
-        line: "{{ item.line }}"
-      with_items:
-        - regexp: "^sonar.jdbc.username"
-          line: "sonar.jdbc.username={{ sonarqube_db_user }}"
-        - regexp: "^sonar.jdbc.password"
-          line: "sonar.jdbc.password={{ sonarqube_db_password }}"
-        - regexp: "^sonar.jdbc.url"
-          line: "sonar.jdbc.url=jdbc:postgresql://localhost:{{ sonar_db_port }}/{{ sonarqube_db_name }}?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance"
-        - regexp: "^sonar.web.context"
-          line: "sonar.web.context={{ sonar_web_context }}"
+    # - name: Configure SonarQube JDBC settings for PostgreSQL.
+    #   lineinfile:
+    #     dest: /usr/local/sonar/conf/sonar.properties
+    #     regexp: "{{ item.regexp }}"
+    #     line: "{{ item.line }}"
+    #   with_items:
+    #     - regexp: "^sonar.jdbc.username"
+    #       line: "sonar.jdbc.username={{ sonarqube_db_user }}"
+    #     - regexp: "^sonar.jdbc.password"
+    #       line: "sonar.jdbc.password={{ sonarqube_db_password }}"
+    #     - regexp: "^sonar.jdbc.url"
+    #       line: "sonar.jdbc.url=jdbc:postgresql://localhost:{{ sonar_db_port }}/{{ sonarqube_db_name }}?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance"
+    #     - regexp: "^sonar.web.context"
+    #       line: "sonar.web.context={{ sonar_web_context }}"
     
     - name: Generate wrapper.conf
       template:
