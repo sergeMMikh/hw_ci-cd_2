@@ -1,2 +1,5 @@
 files/*.pub
 roles/*
+example/.scannerwork/
+example/sonar-project.properties
+example/tkn
