@@ -224,6 +224,7 @@
         timeout: 300
 - name: Get Nexus installed
   hosts: nexus
+  tags: install_nexus
   pre_tasks:
     - name: Create Nexus group
       become: true

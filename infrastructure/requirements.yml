@@ -1,5 +1,5 @@
 ---
 - name: nexus
-  src: https://github.com/alex-harvey-z3q/ansible-nexus.git
+  src: https://github.com/savoirfairelinux/ansible-nexus3-oss
   scm: git
   # version: 1.0.0
