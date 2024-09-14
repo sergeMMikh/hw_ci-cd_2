@@ -143,7 +143,8 @@
   tasks:
     - name: Get distrib ZIP
       get_url:
-        url: "{{ sonar_download_url }}"
+        # url: "{{ sonar_download_url }}"
+        url: "https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-10.6.0.92116.zip"
         dest: "/tmp/{{ sonar_version_directory }}.zip"
         validate_certs: false
 
@@ -160,26 +161,26 @@
     - name: Move Sonar into place.
       become: true
       copy:
-        src: /usr/local/{{ sonar_version_directory }}/
+        src: /usr/local/sonarqube-10.6.0.92116/
         dest: /usr/local/sonar/
         owner: "{{ sonarqube_db_user }}"
         group: "{{ sonarqube_db_user }}"
         remote_src: true
 
-    # - name: Configure SonarQube JDBC settings for PostgreSQL.
-    #   lineinfile:
-    #     dest: /usr/local/sonar/conf/sonar.properties
-    #     regexp: "{{ item.regexp }}"
-    #     line: "{{ item.line }}"
-    #   with_items:
-    #     - regexp: "^sonar.jdbc.username"
-    #       line: "sonar.jdbc.username={{ sonarqube_db_user }}"
-    #     - regexp: "^sonar.jdbc.password"
-    #       line: "sonar.jdbc.password={{ sonarqube_db_password }}"
-    #     - regexp: "^sonar.jdbc.url"
-    #       line: "sonar.jdbc.url=jdbc:postgresql://localhost:{{ sonar_db_port }}/{{ sonarqube_db_name }}?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance"
-    #     - regexp: "^sonar.web.context"
-    #       line: "sonar.web.context={{ sonar_web_context }}"
+    - name: Configure SonarQube JDBC settings for PostgreSQL.
+      lineinfile:
+        dest: /usr/local/sonar/conf/sonar.properties
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      with_items:
+        - regexp: "^sonar.jdbc.username"
+          line: "sonar.jdbc.username={{ sonarqube_db_user }}"
+        - regexp: "^sonar.jdbc.password"
+          line: "sonar.jdbc.password={{ sonarqube_db_password }}"
+        - regexp: "^sonar.jdbc.url"
+          line: "sonar.jdbc.url=jdbc:postgresql://localhost:{{ sonar_db_port }}/{{ sonarqube_db_name }}?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance"
+        - regexp: "^sonar.web.context"
+          line: "sonar.web.context={{ sonar_web_context }}"
     
     - name: Generate wrapper.conf
       template:

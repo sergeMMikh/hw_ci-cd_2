@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=http://192.168.33.12:8081/service/rest/repository/browse/maven-releases/netology/java/
+HostUrl=http://192.168.33.12:8081/repository/maven-releases/netology/java/maven-metadata.xml
