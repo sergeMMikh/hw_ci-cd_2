@@ -52,7 +52,7 @@
 
 1. Скриншот страницы с артефактами</br>
    <img src="images/Task_2.png" alt="Task_2.png" width="700" height="auto">
-2. Файл [`maven-metadata.xml`](files/maven-metadata.xml) для этого артефекта.
+2. Файл [`maven-metadata.xml`](files/maven-metadata.xml) для этого артефекта. Версия 8_102 попала в список *versions*. Так как 8_282 имеет номер больше, то она осталась *latest*.
 
 ### Знакомство с Maven
 
